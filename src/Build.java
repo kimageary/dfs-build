@@ -99,6 +99,25 @@ private static <T> void dfs(Vertex<T> vertex, Set<Vertex<T>> visited) {
    * @return true if the destination is reachable from the start, false otherwise
    */
   public static boolean canReach(Airport start, Airport destination) {
+    if (start == null || destination == null) return false;
+    if (start == destination) return true;
+
+    Set<Airport> visited = new HashSet<>();
+    return canReach(start, destination, visited);
+  }
+  private static boolean canReach(Airport current, Airport destination, Set<Airport> visited){
+    if (current == null) return false;
+    if (current == destination) return true;
+    if (visited.contains(current)) return false;
+
+    visited.add(current);
+
+    for (Airport nearbyAirport : current.getOutboundFlights()) {
+        if (canReach(nearbyAirport, destination, visited)) {
+            return true;
+        }
+    }
+    
     return false;
   }
 
@@ -112,6 +131,26 @@ private static <T> void dfs(Vertex<T> vertex, Set<Vertex<T>> visited) {
    * @return a set of values that cannot be reached from the starting value
    */
   public static <T> Set<T> unreachable(Map<T, List<T>> graph, T starting) {
-    return new HashSet<>();
+    if (starting == null || !graph.containsKey(starting)) {
+      return new HashSet<>(graph.keySet());
+    }
+
+    Set<T> visited = new HashSet<>();
+    dfs(graph, starting, visited);
+
+    Set<T> unreachable = new HashSet<>(graph.keySet());
+    unreachable.removeAll(visited);
+
+    return unreachable;
+}
+
+  private static <T> void dfs(Map<T, List<T>> graph, T current, Set<T> visited) {
+    if (visited.contains(current)) return;
+
+    visited.add(current);
+
+    for (T neighbor : graph.get(current)) {
+        dfs(graph, neighbor, visited);
+    }
   }
 }
