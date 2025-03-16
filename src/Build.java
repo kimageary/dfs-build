@@ -69,7 +69,26 @@ public class Build {
    * @param <T> the type of values stored in the vertices
    */
   public static <T> void printSelfLoopers(Vertex<T> vertex) {
+    if (vertex == null) return;
+
+    Set<Vertex<T>> visited = new HashSet<>();
+    dfs(vertex, visited);
   }
+  
+private static <T> void dfs(Vertex<T> vertex, Set<Vertex<T>> visited) {
+  if (vertex == null || visited.contains(vertex)) return;
+
+  visited.add(vertex);
+
+  // Check if the vertex has a self-loop
+  if (vertex.neighbors.contains(vertex)) {
+      System.out.println(vertex.data);
+  }
+
+  for (Vertex<T> neighbor : vertex.neighbors) {
+      dfs(neighbor, visited);
+  }
+}
 
   /**
    * Determines whether it is possible to reach the destination airport through a series of flights
